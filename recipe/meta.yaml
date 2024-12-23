@@ -51,8 +51,8 @@ about:
   license_family: MIT
   summary: Lightweight I/O abstraction library.
   description: A library for providing I/O abstraction.
-  dev_url: https://github.com/facebookresearch/iopath
   doc_url: https://github.com/facebookresearch/iopath/blob/main/README.md
+  dev_url: https://github.com/facebookresearch/iopath
 
 extra:
   recipe-maintainers:
