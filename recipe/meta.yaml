@@ -30,7 +30,7 @@ requirements:
 {% set ignore_tests = "" %}
 # $PREFIX/lib/python3.10/site-packages/_pytest/threadexception.py:73: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-1 (_poll_jobs)
 {% set ignore_tests = " --ignore=tests/async_torch_test.py" %}
-# Provides infinity tests execution
+# Provides infinity tests execution (tests runs forever)
 {% set ignore_tests = ignore_tests + " --ignore=tests/async_writes_test.py" %}
 # AssertionError: 'test\\a.txt' != 'test/a.txt'
 {% set ignore_tests = ignore_tests + " --ignore=tests/test_file_io.py" %}  # [win]
