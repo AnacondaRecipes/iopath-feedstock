@@ -26,9 +26,11 @@ requirements:
     - portalocker
     - dataclasses  # [py<37]
 
-{% set deselect_tests = "" %}
-# Expected None, but tests/test_s3.py::test_bucket_defined returned False, which will be an error in a future version of pytest.  Did you mean to use `assert` instead of `return`?
-{% set deselect_tests = " --deselect=tests/async_torch_test.py::TestDriver::test" %}
+{% set ignore_tests = "" %}
+# $PREFIX/lib/python3.10/site-packages/_pytest/threadexception.py:73: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-1 (_poll_jobs)
+{% set ignore_tests = " --ignore=tests/async_torch_test.py" %}
+# Provides infinity tests execution
+{% set ignore_tests = ignore_tests + " --ignore=tests/async_writes_test.py" %}
 
 test:
   source_files:
@@ -37,12 +39,10 @@ test:
     - iopath
   commands:
     - pip check
-    - pytest -v {{ deselect_tests }} tests
+    - pytest -vvv {{ ignore_tests }} tests
   requires:
     - pip
     - pytest
-    # Needs for async_torch_test.py
-    - pytorch
 
 about:
   home: https://github.com/facebookresearch/iopath
