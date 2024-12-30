@@ -29,16 +29,16 @@ requirements:
 
 {% set ignore_tests = "" %}
 # $PREFIX/lib/python3.10/site-packages/_pytest/threadexception.py:73: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-1 (_poll_jobs)
-{% set ignore_tests = " --ignore=tests/async_torch_test.py" %}
+#{% set ignore_tests = " --ignore=tests/async_torch_test.py" %}
 # Provides infinity tests execution (tests runs forever)
 {% set ignore_tests = ignore_tests + " --ignore=tests/async_writes_test.py" %}
 
 {% set deselect_tests = "" %}
 # AssertionError: 'test\\a.txt' != 'test/a.txt'
 {% set deselect_tests = " --deselect=tests/test_file_io.py::TestNativeIO::test_get_path_with_cwd" %}  # [win]
-{% set deselect_tests = " --deselect=tests/test_file_io.py::TestLazyPath::test_join" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_file_io.py::TestLazyPath::test_join" %}  # [win]
 #AssertionError: '\\\\?\\C:\\cygwin64\\tmp\\tmp3abxq5np\\te[46 chars].txt' != 'C:\\cygwin64\\tmp\\tmp3abxq5np\\test_file[39 chars].txt'
-{% set deselect_tests = " --deselect=tests/test_file_io.py::TestNativeIO::test_symlink" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_file_io.py::TestNativeIO::test_symlink" %}  # [win]
 
 test:
   source_files:
@@ -51,6 +51,7 @@ test:
   requires:
     - pip
     - pytest
+    - pytorch
 
 about:
   home: https://github.com/facebookresearch/iopath
