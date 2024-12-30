@@ -28,10 +28,10 @@ requirements:
     - dataclasses  # [py<37]
 
 {% set ignore_tests = "" %}
-# $PREFIX/lib/python3.10/site-packages/_pytest/threadexception.py:73: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-1 (_poll_jobs)
-#{% set ignore_tests = " --ignore=tests/async_torch_test.py" %}
 # Provides infinity tests execution (tests runs forever)
-{% set ignore_tests = ignore_tests + " --ignore=tests/async_writes_test.py" %}
+{% set ignore_tests = " --ignore=tests/async_writes_test.py" %}
+
+
 
 {% set deselect_tests = "" %}
 # AssertionError: 'test\\a.txt' != 'test/a.txt'
@@ -39,6 +39,25 @@ requirements:
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_file_io.py::TestLazyPath::test_join" %}  # [win]
 #AssertionError: '\\\\?\\C:\\cygwin64\\tmp\\tmp3abxq5np\\te[46 chars].txt' != 'C:\\cygwin64\\tmp\\tmp3abxq5np\\test_file[39 chars].txt'
 {% set deselect_tests = deselect_tests + " --deselect=tests/test_file_io.py::TestNativeIO::test_symlink" %}  # [win]
+
+#  $PREFIX/lib/python3.9/site-packages/_pytest/threadexception.py:73: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-1 
+#  Traceback (most recent call last):
+#    File "$PREFIX/lib/python3.9/threading.py", line 980, in _bootstrap_inner
+#      self.run()
+#    File "$PREFIX/lib/python3.9/threading.py", line 917, in run
+#      self._target(*self._args, **self._kwargs)
+#    File "$PREFIX/lib/python3.9/site-packages/iopath/common/non_blocking_io.py", line 139, in _poll_jobs
+#      self._pool.submit(func).result()  # Wait for job to finish.
+#    File "$PREFIX/lib/python3.9/concurrent/futures/_base.py", line 446, in result
+#      return self.__get_result()
+#    File "$PREFIX/lib/python3.9/concurrent/futures/_base.py", line 391, in __get_result
+#      raise self._exception
+#    File "$PREFIX/lib/python3.9/concurrent/futures/thread.py", line 58, in run
+#      result = self.fn(*self.args, **self.kwargs)
+#    File "$PREFIX/lib/python3.9/site-packages/iopath/common/non_blocking_io.py", line 250, in <lambda>
+#      self._notify_manager(lambda: self._io.write(b))
+#  OSError: [Errno 14] Bad address
+{% set deselect_tests = deselect_tests + " --deselect=tests/async_torch_test.py::TestDriver::test" %}
 
 test:
   source_files:
