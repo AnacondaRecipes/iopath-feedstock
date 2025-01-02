@@ -1,43 +1,86 @@
 {% set name = "iopath" %}
-{% set version = "0.1.9" %}
+{% set version = "0.1.10" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/facebookresearch/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 3f17a6558fa62fdc2ab1ecdf7c106576167fb8bb19f1612289fd88467535ad7a
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/iopath-{{ version }}.tar.gz
+  sha256: 3311c16a4d9137223e20f141655759933e1eda24f8bff166af834af3c645ef01
 
 build:
-  noarch: python
   number: 0
-  script: {{ PYTHON }} -m pip install . -vv
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  skip: true  # [py<36]
 
 requirements:
   host:
-    - python >=3.6
+    - python
     - pip
+    - setuptools
+    - wheel
   run:
-    - dataclasses
-    - portalocker
-    - python >=3.6
+    - python
     - tqdm
+    - typing_extensions
+    - portalocker
+    - dataclasses  # [py<37]
+
+{% set ignore_tests = "" %}
+# Provides infinity tests execution (tests runs forever)
+{% set ignore_tests = " --ignore=tests/async_writes_test.py" %}
+
+
+
+{% set deselect_tests = "" %}
+# AssertionError: 'test\\a.txt' != 'test/a.txt'
+{% set deselect_tests = " --deselect=tests/test_file_io.py::TestNativeIO::test_get_path_with_cwd" %}  # [win]
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_file_io.py::TestLazyPath::test_join" %}  # [win]
+#AssertionError: '\\\\?\\C:\\cygwin64\\tmp\\tmp3abxq5np\\te[46 chars].txt' != 'C:\\cygwin64\\tmp\\tmp3abxq5np\\test_file[39 chars].txt'
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_file_io.py::TestNativeIO::test_symlink" %}  # [win]
+
+#  $PREFIX/lib/python3.9/site-packages/_pytest/threadexception.py:73: PytestUnhandledThreadExceptionWarning: Exception in thread Thread-1 
+#  Traceback (most recent call last):
+#    File "$PREFIX/lib/python3.9/threading.py", line 980, in _bootstrap_inner
+#      self.run()
+#    File "$PREFIX/lib/python3.9/threading.py", line 917, in run
+#      self._target(*self._args, **self._kwargs)
+#    File "$PREFIX/lib/python3.9/site-packages/iopath/common/non_blocking_io.py", line 139, in _poll_jobs
+#      self._pool.submit(func).result()  # Wait for job to finish.
+#    File "$PREFIX/lib/python3.9/concurrent/futures/_base.py", line 446, in result
+#      return self.__get_result()
+#    File "$PREFIX/lib/python3.9/concurrent/futures/_base.py", line 391, in __get_result
+#      raise self._exception
+#    File "$PREFIX/lib/python3.9/concurrent/futures/thread.py", line 58, in run
+#      result = self.fn(*self.args, **self.kwargs)
+#    File "$PREFIX/lib/python3.9/site-packages/iopath/common/non_blocking_io.py", line 250, in <lambda>
+#      self._notify_manager(lambda: self._io.write(b))
+#  OSError: [Errno 14] Bad address
+{% set deselect_tests = deselect_tests + " --deselect=tests/async_torch_test.py::TestDriver::test" %}
 
 test:
+  source_files:
+    - tests
   imports:
     - iopath
   commands:
     - pip check
+    - pytest -vvv {{ ignore_tests }} {{ deselect_tests }} tests
   requires:
     - pip
+    - pytest
+    - pytorch
 
 about:
   home: https://github.com/facebookresearch/iopath
   license: MIT
   license_file: LICENSE
-  summary: Lightweight I/O abstraction library
-
+  license_family: MIT
+  summary: Lightweight I/O abstraction library.
+  description: A library for providing I/O abstraction.
+  doc_url: https://github.com/facebookresearch/iopath/blob/main/README.md
+  dev_url: https://github.com/facebookresearch/iopath
 
 extra:
   recipe-maintainers:
